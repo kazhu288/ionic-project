@@ -4,14 +4,20 @@
       <main class="page-container">
         <!-- Application Title -->
         <header class="app-title">
-          <span class="eyebrow">IONIC / EVERYDAY COLLECTION</span>
-          <h1>Product Catalog<span class="title-dot">.</span></h1>
-          <p>Simple finds for your everyday life. Explore the collection.</p>
+          <div class="title-content">
+            <span class="eyebrow">IONIC / EVERYDAY COLLECTION</span>
+            <h1>Product Catalog<span class="title-dot">.</span></h1>
+            <p>Simple finds for your everyday life. Explore the collection.</p>
+          </div>
+          <div class="header-decoration">
+            <div class="decoration-circle"></div>
+            <div class="decoration-circle"></div>
+          </div>
         </header>
 
         <!-- Add Product Button -->
         <div class="add-product-section">
-          <IonButton @click="openAddModal" expand="block">
+          <IonButton @click="openAddModal" expand="block" class="add-button">
             <IonIcon slot="start" :icon="addOutline" />
             Add New Product
           </IonButton>
@@ -19,12 +25,15 @@
 
         <!-- Search and Category Filters -->
         <section aria-label="Filter products" class="filter-container">
-          <IonSearchbar
-            v-model="searchText"
-            placeholder="Search products..."
-            aria-label="Search products"
-            :debounce="0"
-          />
+          <div class="search-wrapper">
+            <IonSearchbar
+              v-model="searchText"
+              placeholder="Search products..."
+              aria-label="Search products"
+              :debounce="0"
+              class="enhanced-searchbar"
+            />
+          </div>
           <div class="categories" role="group" aria-label="Product categories">
             <IonButton
               v-for="category in categories"
@@ -32,7 +41,10 @@
               :fill="selectedCategory === category ? 'solid' : 'outline'"
               :aria-pressed="selectedCategory === category"
               @click="selectedCategory = category"
-            >{{ category }}</IonButton>
+              class="category-button"
+            >
+              {{ category }}
+            </IonButton>
           </div>
         </section>
 
@@ -46,7 +58,13 @@
           @reset-filters="resetFilters"
         />
 
-        <footer>{{ products.length }} everyday essentials <span aria-hidden="true">/</span> Sample catalog · Prices in PHP</footer>
+        <footer class="enhanced-footer">
+          <div class="footer-content">
+            <span class="product-count">{{ products.length }} everyday essentials</span>
+            <span class="divider">/</span>
+            <span class="catalog-info">Sample catalog · Prices in PHP</span>
+          </div>
+        </footer>
       </main>
     </IonContent>
 
@@ -73,13 +91,14 @@ import { firebaseService, Product, ProductInput } from '../services/firebase';
 || Catalog State
 ||--------------------------------------------------------------------------
 */
-type Category = 'All' | 'Electronics' | 'Lifestyle' | 'Home';
+type Category = 'All' | 'Electronics' | 'Lifestyle' | 'Home' | 'Clothes' | 'Shoes';
 const searchText = ref('');
 const selectedCategory = ref<Category>('All');
-const categories: Category[] = ['All', 'Electronics', 'Lifestyle', 'Home'];
+const categories: Category[] = ['All', 'Electronics', 'Lifestyle', 'Home', 'Clothes', 'Shoes'];
 const products = ref<Product[]>([]);
 const isModalOpen = ref(false);
 const editingProduct = ref<Product | undefined>(undefined);
+const isLoading = ref(false);
 
 /*
 ||--------------------------------------------------------------------------
@@ -87,10 +106,13 @@ const editingProduct = ref<Product | undefined>(undefined);
 ||--------------------------------------------------------------------------
 */
 async function loadProducts() {
+  isLoading.value = true;
   try {
     products.value = await firebaseService.getProducts();
   } catch (error) {
     console.error('Error loading products:', error);
+  } finally {
+    isLoading.value = false;
   }
 }
 
@@ -163,33 +185,226 @@ onMounted(() => {
 
 <style scoped>
 /* Ionic Page and Main Container */
-ion-content { --background: #f7f6f2; --color: #263d32; }
-.page-container { max-width: 1100px; margin: 0 auto; padding: calc(48px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom)); }
+ion-content {
+  --background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  --color: #263d32;
+}
+
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: calc(48px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom));
+}
 
 /* Application Title */
-.app-title { padding-bottom: 32px; border-bottom: 1px solid #dadfd7; }
-.eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2.2px; }
-h1 { margin: 14px 0; font-size: clamp(32px, 5vw, 54px); font-weight: 650; letter-spacing: -1.8px; }
-.title-dot { color: #9b723d; }
-.app-title p { color: #677168; margin: 0; line-height: 1.6; }
+.app-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 32px;
+  border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+  position: relative;
+}
+
+.title-content {
+  flex: 1;
+}
+
+.eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2.2px;
+  color: #667eea;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 14px 0;
+  font-size: clamp(32px, 5vw, 54px);
+  font-weight: 700;
+  letter-spacing: -1.8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.title-dot {
+  color: #764ba2;
+}
+
+.app-title p {
+  color: #677168;
+  margin: 0;
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+.header-decoration {
+  display: flex;
+  gap: 16px;
+}
+
+.decoration-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  opacity: 0.1;
+  animation: float 6s ease-in-out infinite;
+}
+
+.decoration-circle:nth-child(2) {
+  animation-delay: -3s;
+  width: 40px;
+  height: 40px;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
 
 /* Add Product Section */
-.add-product-section { margin: 20px 0; }
+.add-product-section {
+  margin: 24px 0;
+}
+
+.add-button {
+  --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --border-radius: 12px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+}
+
+.add-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
 
 /* Search and Category Buttons */
-.filter-container { padding: 26px 0 18px; }
-ion-searchbar { padding: 0; --background: #fff; --color: #263d32; --placeholder-color: #677168; --icon-color: #677168; --border-radius: 12px; --box-shadow: 0 0 0 1px #dadfd7; }
-.categories { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
-ion-button { margin: 0; min-height: 42px; text-transform: none; letter-spacing: 0; --border-radius: 24px; --box-shadow: none; --background: #2b493a; --color: #fff; --border-color: #b3bcb2; --border-width: 1px; }
-ion-button[fill='outline'] { --color: #3e5547; }
+.filter-container {
+  padding: 26px 0 18px;
+}
 
-/* Footer and Small Phones */
-footer { margin-top: 30px; padding-top: 24px; border-top: 1px solid #dadfd7; color: #677168; font-size: 12px; text-align: center; line-height: 1.7; }
-footer span { margin: 0 10px; }
+.search-wrapper {
+  margin-bottom: 20px;
+}
+
+.enhanced-searchbar {
+  --background: #fff;
+  --color: #263d32;
+  --placeholder-color: #677168;
+  --icon-color: #667eea;
+  --border-radius: 16px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --padding-start: 16px;
+  --padding-end: 16px;
+}
+
+.categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.category-button {
+  margin: 0;
+  min-height: 42px;
+  text-transform: none;
+  letter-spacing: 0;
+  --border-radius: 24px;
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --background: #fff;
+  --color: #667eea;
+  --border-color: #667eea;
+  --border-width: 2px;
+  --padding-start: 20px;
+  --padding-end: 20px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.category-button:hover {
+  --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --color: #fff;
+  transform: translateY(-2px);
+}
+
+.category-button[fill='solid'] {
+  --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --color: #fff;
+  --border-color: transparent;
+}
+
+/* Footer */
+.enhanced-footer {
+  margin-top: 40px;
+  padding: 24px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: #677168;
+  font-size: 14px;
+}
+
+.product-count {
+  font-weight: 600;
+  color: #667eea;
+}
+
+.divider {
+  color: #d1d5db;
+}
+
+.catalog-info {
+  color: #9ca3af;
+}
+
+/* Responsive Design */
 @media (max-width: 575px) {
-  .page-container { padding: calc(28px + env(safe-area-inset-top)) 18px calc(24px + env(safe-area-inset-bottom)); }
-  .app-title { padding-bottom: 24px; }
-  .categories { gap: 6px; }
-  ion-button { font-size: 12px; --padding-start: 14px; --padding-end: 14px; }
+  .page-container {
+    padding: calc(28px + env(safe-area-inset-top)) 18px calc(24px + env(safe-area-inset-bottom));
+  }
+
+  .app-title {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-bottom: 24px;
+  }
+
+  .header-decoration {
+    display: none;
+  }
+
+  .categories {
+    gap: 8px;
+  }
+
+  .category-button {
+    font-size: 12px;
+    --padding-start: 14px;
+    --padding-end: 14px;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    gap: 8px;
+  }
 }
 </style>

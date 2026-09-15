@@ -1,21 +1,32 @@
 <template>
   <article class="product-card">
-    <img :src="product.image" :alt="product.name" width="320" height="270" />
+    <div class="card-image-container">
+      <img :src="product.image" :alt="product.name" />
+      <div class="card-overlay">
+        <div class="overlay-actions">
+          <IonButton @click="$emit('edit', product)" class="action-button edit-button">
+            <IonIcon :icon="pencilOutline" />
+          </IonButton>
+          <IonButton @click="$emit('delete', product.id)" class="action-button delete-button">
+            <IonIcon :icon="trashOutline" />
+          </IonButton>
+        </div>
+      </div>
+    </div>
     <div class="product-information">
-      <span class="product-category">{{ product.category }}</span>
+      <div class="category-badge">{{ product.category }}</div>
       <h3>{{ product.name }}</h3>
       <p>{{ product.description }}</p>
-      <strong class="product-price">{{ formatPrice(product.price) }}</strong>
-      <div class="product-actions">
-        <IonButton size="small" @click="$emit('edit', product)">Edit</IonButton>
-        <IonButton size="small" color="danger" @click="$emit('delete', product.id)">Delete</IonButton>
+      <div class="price-section">
+        <span class="product-price">{{ formatPrice(product.price) }}</span>
       </div>
     </div>
   </article>
 </template>
 
 <script setup lang="ts">
-import { IonButton } from '@ionic/vue';
+import { IonButton, IonIcon } from '@ionic/vue';
+import { pencilOutline, trashOutline } from 'ionicons/icons';
 import { Product } from '../services/firebase';
 
 defineProps<{
@@ -37,53 +48,133 @@ function formatPrice(price: number): string {
 .product-card {
   height: 100%;
   overflow: hidden;
-  border: 1px solid #e0e3db;
   border-radius: 16px;
   background: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+  transition: all 0.3s ease;
+  border: 1px solid #f0f0f0;
 }
 
-.product-card img {
-  display: block;
-  width: 100%;
-  height: auto;
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.card-image-container {
+  position: relative;
+  overflow: hidden;
   aspect-ratio: 320 / 230;
+}
+
+.card-image-container img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.product-card:hover .card-image-container img {
+  transform: scale(1.1);
+}
+
+.card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.product-card:hover .card-overlay {
+  opacity: 1;
+}
+
+.overlay-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.action-button {
+  --background: rgba(255, 255, 255, 0.9);
+  --color: #1f2937;
+  --border-radius: 50%;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.action-button:hover {
+  --background: #fff;
+  transform: scale(1.1);
+}
+
+.edit-button {
+  --color: #667eea;
+}
+
+.delete-button {
+  --color: #ef4444;
 }
 
 .product-information {
-  padding: 22px;
+  padding: 20px;
 }
 
-.product-category {
-  color: #63735f;
+.category-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
-  font-size: 10px;
-  letter-spacing: 1.5px;
-  font-weight: 700;
-}
-
-h3 {
-  font-size: 19px;
-  margin: 9px 0;
-  font-weight: 650;
-}
-
-.product-information p {
-  color: #697069;
-  font-size: 14px;
-  line-height: 1.65;
-  min-height: 47px;
-  margin: 0 0 18px;
-}
-
-.product-price {
-  font-size: 19px;
-  display: block;
+  letter-spacing: 0.5px;
   margin-bottom: 12px;
 }
 
-.product-actions {
+h3 {
+  font-size: 18px;
+  margin: 0 0 8px;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1.3;
+}
+
+.product-information p {
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 42px;
+  margin: 0 0 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.price-section {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.product-price {
+  font-size: 20px;
+  font-weight: 700;
+  color: #667eea;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 </style>
