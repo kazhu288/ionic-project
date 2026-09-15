@@ -82,20 +82,15 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import {
-  IonModal,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonButtons,
-  IonButton,
-  IonContent,
-  IonItem,
-  IonLabel,
-  IonInput,
-  IonSelect,
-  IonSelectOption,
-  IonTextarea,
-  IonIcon
+  IonModal, 
+  IonContent, 
+  IonButton, 
+  IonIcon, 
+  IonItem, 
+  IonLabel, 
+  IonInput, 
+  IonSelect, 
+  IonSelectOption 
 } from '@ionic/vue';
 import { closeOutline, imageOutline, cameraOutline, addOutline, pencilOutline } from 'ionicons/icons';
 import { Product, ProductInput } from '../services/firebase';
