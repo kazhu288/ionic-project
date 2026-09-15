@@ -10,8 +10,9 @@
         </IonButtons>
       </IonToolbar>
     </IonHeader>
-    <IonContent class="ion-padding modal-content">
-      <form @submit.prevent="handleSubmit" class="product-form">
+    
+    <div class="ion-padding modal-content" style="overflow-y: auto;">
+      <form class="product-form">
         <!-- Image Upload Section -->
         <div class="image-upload-section">
           <div class="image-preview" :class="{ 'has-image': imagePreview }">
@@ -69,13 +70,14 @@
         </div>
 
         <div class="form-actions">
-          <IonButton type="submit" expand="block" class="submit-button" size="large">
+          <!-- Changed to @click to bypass Ionic shadow DOM submit issues -->
+          <IonButton @click="handleSubmit" expand="block" class="submit-button" size="large">
             <IonIcon slot="start" :icon="isEdit ? pencilOutline : addOutline" />
             {{ isEdit ? 'Update Product' : 'Add Product' }}
           </IonButton>
         </div>
       </form>
-    </IonContent>
+    </div>
   </IonModal>
 </template>
 
@@ -83,14 +85,18 @@
 import { ref, watch } from 'vue';
 import {
   IonModal, 
-  IonContent, 
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonButtons,
   IonButton, 
   IonIcon, 
   IonItem, 
   IonLabel, 
   IonInput, 
   IonSelect, 
-  IonSelectOption 
+  IonSelectOption,
+  IonTextarea
 } from '@ionic/vue';
 import { closeOutline, imageOutline, cameraOutline, addOutline, pencilOutline } from 'ionicons/icons';
 import { Product, ProductInput } from '../services/firebase';
@@ -195,7 +201,7 @@ function onDismiss() {
 }
 
 .modal-content {
-  --background: #f8f9fa;
+  background: #f8f9fa; 
 }
 
 .product-form {
